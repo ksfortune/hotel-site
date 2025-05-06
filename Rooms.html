@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="rooms-page">
+    <div class="header">
+        <h1>Номера</h1>
+        {% if current_user.role in ['supervisor', 'admin'] %}
+        <button class="btn add-room-btn" onclick="showAddRoomModal()">Добавить</button>
+        {% endif %}
+    </div>
+
+    <div class="filters">
+        <input type="text" id="searchInput" placeholder="Поиск номеров..." class="search-input">
+        <select id="typeFilter" class="filter-select">
+            <option value="">Все</option>
+            <option value="single">Одноместный</option>
+            <option value="double">Двухместный</option>
+            <option value="suite">Люкс</option>
+        </select>
+        <select id="categoryFilter" class="filter-select">
+            <option value="">Все</option>
+            <option value="standard">Стандарт</option>
+            <option value="comfort">Комфорт</option>
+            <option value="premium">Премиум</option>
+        </select>
+        <select id="statusFilter" class="filter-select">
+            <option value="">Все</option>
+            <option value="свободен">Свободен</option>
+            <!--<option value="занят">Занят</option>-->
+            <option value="забронирован">Забронирован</option>
+        </select>
+    </div>
+
+    <div class="grid">
+        {% for room in rooms %}
+        <div class="card room-card">
+            <h3>Номер {{ room.room_number }}</h3>
+            <p class="room-type">
+                {% if room.room_type == 'single' %}
+                Одноместный
+                {% elif room.room_type == 'double' %}
+                Двухместный
+                {% elif room.room_type == 'suite' %}
+                Люкс
+                {% endif %}
+            </p>
+            <p class="room-category">
+                {% if room.category == 'standard' %}
+                Стандарт
+                {% elif room.category == 'comfort' %}
+                Комфорт
+                {% elif room.category == 'premium' %}
+                Премиум
+                {% endif %}
+            </p>
+            <p class="room-price">{{ "%.2f"|format(room.price) }} ₽ ночь</p>
+            <div class="status-badge {{ room.status|lower }}">
+                {% if room.status == 'available' %}
+                Свободен
+                {% elif room.status == 'occupied' %}
+                Занят
+                {% elif room.status == 'booked' %}
+                Забронирован
+                {% endif %}
+            </div>
+            {% if current_user.role in ['supervisor', 'admin'] %}
+            <div class="room-actions">
+                <button class="btn-icon edit" onclick="editRoom({{ room.id }})">
+                    <span class="material-icons">edit</span>
+                </button>
+                {% if current_user.role == 'supervisor' %}
+                <button class="btn-icon delete" onclick="deleteRoom({{ room.id }})">
+                    <span class="material-icons">delete</span>
+                </button>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
