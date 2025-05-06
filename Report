@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="reports-page">
+    <div class="header">
+        <h1>Отчеты</h1>
+    </div>
+
+    <div class="date-filter">
+        <div class="form-group">
+            <label>Начальная дата</label>
+            <input type="date" id="startDate" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Конечная дата</label>
+            <input type="date" id="endDate" class="form-control">
+        </div>
+        <button class="btn btn-primary" onclick="generateReports()">
+            Сгенерировать отчеты
+        </button>
+    </div>
+
+    <div class="reports-grid">
+        <!-- Отчет по заполняемости -->
+        <div class="report-card">
+            <h3>Заполняемость номеров</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-label">Всего номеров</span>
+                    <span class="stat-value" id="totalRooms">-</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Занято номеров</span>
+                    <span class="stat-value" id="occupiedRooms">-</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Заполняемость</span>
+                    <span class="stat-value" id="occupancyRate">-</span>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="occupancyChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Отчет по выручке -->
+        <div class="report-card">
+            <h3>Выручка</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-label">Общая выручка</span>
+                    <span class="stat-value" id="totalRevenue">-</span>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Отчет по бронированиям -->
+        <div class="report-card">
+            <h3>Статистика бронирований</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-label">Всего бронирований</span>
+                    <span class="stat-value" id="totalBookings">-</span>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="bookingsChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
