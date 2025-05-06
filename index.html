@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="dashboard-header">
+        <h1>Панель управления</h1>
+        <div class="user-welcome">
+            Добро пожаловать, {{ current_user.username }}!
+            <span class="user-role">({{ current_user.role }})</span>
+            <a href="{{ url_for('main.hotel') }}" class="hotel-link">Перейти на сайт отеля</a>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="dashboard-card stats">
+            <h2>Статистика</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-value">{{ rooms|length }}</span>
+                    <span class="stat-label">Всего номеров</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">{{ rooms|selectattr('status', 'equalto', 'available')|list|length }}</span>
+                    <span class="stat-label">Свободных номеров</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">{{ rooms|selectattr('status', 'equalto', 'occupied')|list|length }}</span>
+                    <span class="stat-label">Занятых номеров</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">{{ rooms|selectattr('status', 'equalto', 'booked')|list|length }}</span>
+                    <span class="stat-label">Забронированных</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-card recent-activity">
+            <h2>Последние бронирования</h2>
+            <div class="recent-bookings">
+                {% for booking in recent_bookings %}
+                <div class="recent-booking-item">
+                    <span class="booking-room">Номер {{ booking.room.room_number }}</span>
+                    <span class="booking-client">{{ booking.client.last_name }} {{ booking.client.first_name }}</span>
+                    <span class="booking-dates">{{ booking.check_in.strftime('%d.%m.%Y') }} - {{ booking.check_out.strftime('%d.%m.%Y') }}</span>
+                    <span class="booking-status {{ booking.status }}">
+                        {% if booking.status == 'pending' %}
+                        Ожидает подтверждения
+                        {% elif booking.status == 'confirmed' %}
+                        Подтверждено
+                        {% elif booking.status == 'cancelled' %}
+                        Отменено
+                        {% elif booking.status == 'completed' %}
+                        Завершено
+                        {% endif %}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="dashboard-card quick-actions">
+            <h2>Быстрые действия</h2>
+            <div class="actions-grid">
+                {% if current_user.role in ['admin', 'supervisor'] %}
+                <button class="action-btn" onclick="showAddRoomModal()">
+                    <span class="material-icons">add_circle</span>
+                    Добавить номер
+                </button>
+                <button class="action-btn" onclick="showAddClientModal()">
+                    <span class="material-icons">person_add</span>
+                    Добавить клиента
+                </button>
+                <button class="action-btn" onclick="showAddBookingModal()">
+                    <span class="material-icons">event_available</span>
+                    Новое бронирование
+                </button>
+                {% endif %}
+                <button class="action-btn" onclick="location.href='/reports'">
+                    <span class="material-icons">assessment</span>
+                    Отчеты
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
