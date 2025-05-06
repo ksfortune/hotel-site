@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="content-wrapper">
+    <div class="header-section">
+        <h1>Бронирования</h1>
+        {% if current_user.role in ['admin', 'supervisor'] %}
+        <button class="btn btn-primary" onclick="showAddBookingModal()">
+            Новое бронирование
+        </button>
+        {% endif %}
+    </div>
+    <div class="bookings-list">
+        {% for booking in bookings %}
+        <div class="booking-card">
+            <div class="booking-header">
+                <h3>Номер {{ booking.room.room_number }}</h3>
+                <span class="booking-status {{ booking.status }}">
+                    {% if booking.status == 'pending' %}
+                    Ожидает подтверждения
+                    {% elif booking.status == 'confirmed' %}
+                    Подтверждено
+                    {% elif booking.status == 'cancelled' %}
+                    Отменено
+                    {% elif booking.status == 'completed' %}
+                    Завершено
+                    {% endif %}
+                </span>
+            </div>
+            <div class="booking-details">
+                <p><strong>Клиент:</strong> {{ booking.client.last_name }} {{ booking.client.first_name }}</p>
+                <p><strong>Заезд:</strong> {{ booking.check_in.strftime('%d.%m.%Y') }}</p>
+                <p><strong>Выезд:</strong> {{ booking.check_out.strftime('%d.%m.%Y') }}</p>
+                <!--<p><strong>Тип номера:</strong> {{ booking.room.room_type }} ({{ booking.room.category }})</p>-->
+                <p><strong>Цена за ночь:</strong> {{ booking.room.price }} ₽</p>
+            </div>
+            {% if current_user.role in ['admin', 'supervisor'] and booking.status == 'pending' %}
+            <div class="booking-actions">
+                <button class="btn btn-success" onclick="updateBookingStatus({{ booking.id }}, 'confirmed')">
+                    Подтвердить
+                </button>
+                <button class="btn btn-danger" onclick="updateBookingStatus({{ booking.id }}, 'cancelled')">
+                    Отменить
+                </button>
+            </div>
+            {% endif %}
+            {% if current_user.role in ['admin', 'supervisor'] and booking.status == 'confirmed' %}
+            <div class="booking-actions">
+                <button class="btn btn-primary" onclick="updateBookingStatus({{ booking.id }}, 'completed')">
+                    Завершить
+                </button>
+                <button class="btn btn-danger" onclick="updateBookingStatus({{ booking.id }}, 'cancelled')">
+                    Отменить
+                </button>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
